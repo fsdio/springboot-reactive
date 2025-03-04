@@ -1,0 +1,53 @@
+package com.example.springboot_reactive.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.server.authentication.SessionLimit;
+import org.springframework.security.web.server.authentication.logout.DelegatingServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.SecurityContextServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.WebSessionServerLogoutHandler;
+
+@Configuration
+@EnableReactiveMethodSecurity(useAuthorizationManager=true)
+@EnableWebFluxSecurity
+public class SecurityConfig {
+    @Bean
+    SecurityWebFilterChain http(ServerHttpSecurity http) throws Exception {
+        DelegatingServerLogoutHandler logoutHandler = new DelegatingServerLogoutHandler(
+                new SecurityContextServerLogoutHandler(), new WebSessionServerLogoutHandler()
+        );
+
+        http
+            .authorizeExchange((exchange) -> exchange
+                .pathMatchers("/resources/**", "/signup", "/about").permitAll()
+                .pathMatchers("/admin/**").hasRole("ADMIN")
+                .anyExchange().authenticated()
+            )
+            .httpBasic(withDefaults())
+            .formLogin(withDefaults())
+            .logout((logout) -> logout.logoutHandler(logoutHandler))
+            .sessionManagement((sessions) -> sessions
+            .concurrentSessions((concurrency) -> concurrency
+                .maximumSessions(SessionLimit.UNLIMITED))
+        );
+
+        return http.build();
+    }
+
+    @Bean
+	public MapReactiveUserDetailsService userDetailsService() {
+		UserDetails user = User.withUsername("user")
+        .password("{bcrypt}$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG")
+        .roles("USER")
+        .build();
+		return new MapReactiveUserDetailsService(user);
+	}
+}

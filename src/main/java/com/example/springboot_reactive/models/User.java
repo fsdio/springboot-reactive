@@ -1,14 +1,12 @@
 package com.example.springboot_reactive.models;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
+import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import static java.util.stream.Collectors.toList;
-
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,16 +15,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Table(name = "users")
 public class User implements UserDetails {
+
+  @NotEmpty
+  private String id;
   @NotEmpty
   private String username;
   @NotEmpty
   private String password;
-  private List<String> roles = new ArrayList<>();
+  private String roles;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
+    return Collections.singletonList(new SimpleGrantedAuthority(roles));
   }
 
   @Override

@@ -1,4 +1,4 @@
-package com.example.springboot_reactive.jwt;
+package com.example.springboot_reactive.security.jwt;
 
 import java.util.Base64;
 import java.util.Collection;

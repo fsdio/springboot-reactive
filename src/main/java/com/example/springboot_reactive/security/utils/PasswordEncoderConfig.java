@@ -1,4 +1,4 @@
-package com.example.springboot_reactive.config;
+package com.example.springboot_reactive.security.utils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -20,7 +20,8 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService {
 
   @Override
   public Mono<UserDetails> findByUsername(String username) {
-    return Mono.just(this.users.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found")));
+    return users.findByUsername(username)
+        .switchIfEmpty(Mono.error(() -> new UsernameNotFoundException("Username: " + username + " not found")))
+        .cast(UserDetails.class);
   }
 }

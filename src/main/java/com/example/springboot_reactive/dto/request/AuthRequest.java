@@ -1,4 +1,4 @@
-package com.example.springboot_reactive.controller;
+package com.example.springboot_reactive.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

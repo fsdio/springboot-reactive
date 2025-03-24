@@ -13,8 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
-import com.example.springboot_reactive.jwt.JwtTokenAuthenticationFilter;
-import com.example.springboot_reactive.jwt.JwtTokenProvider;
+import com.example.springboot_reactive.security.jwt.JwtTokenAuthenticationFilter;
+import com.example.springboot_reactive.security.jwt.JwtTokenProvider;
 import com.example.springboot_reactive.service.CustomUserDetailsService;
 
 import reactor.core.publisher.Mono;
@@ -45,7 +45,7 @@ public class SecurityConfig {
         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .authorizeExchange(
             authorizeExchange -> authorizeExchange
-                .pathMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                .pathMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                 .pathMatchers(HttpMethod.GET, "/admin").hasRole("ADMIN")
                 .pathMatchers(HttpMethod.GET, "/user").hasRole("USER")
                 .anyExchange().permitAll())
@@ -55,7 +55,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public ReactiveAuthenticationManager reactiveAuthenticationManager(CustomUserDetailsService userDetailsService,
+  public ReactiveAuthenticationManager reactiveAuthenticationManager(
+      CustomUserDetailsService userDetailsService,
       PasswordEncoder passwordEncoder) {
     UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(
         userDetailsService);

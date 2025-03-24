@@ -1,4 +1,4 @@
-package com.example.springboot_reactive.jwt;
+package com.example.springboot_reactive.security.jwt;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -40,9 +40,9 @@ public class JwtTokenAuthenticationFilter implements WebFilter {
 
     // Check if bearerToken is not null and has the correct prefix
     if (bearerToken != null && StringUtils.hasText(bearerToken) && bearerToken.startsWith(HEADER_PREFIX)) {
-      return bearerToken.substring(7); // Extract the token after "Bearer "
+      return bearerToken.substring(7);
     }
 
-    return null; // Return null if no valid token is found
+    return null;
   }
 }

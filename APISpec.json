@@ -1,0 +1,301 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Spec App Notes",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://api.Notes.{env}/api/v1",
+      "description": "Server Host Name",
+      "variables": {
+        "env": {
+          "enum": [
+            "dev",
+            "staging",
+            "prod"
+          ],
+          "default": "dev"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoint Melakukan Autentikasi"
+    },
+    {
+      "name": "Notes",
+      "description": "Endpoint Menggunakan Pencatatan"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "my-username": {
+                "value": "my-username"
+              }
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "my-password": {
+                "value": "my-password"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success register new user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "New user created",
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "john@doe.com": {
+                "value": "john@doe.com"
+              }
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "password": {
+                "value": "password"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success Login",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos": {
+      "post": {
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "Buy groceries": {
+                "value": "Buy groceries"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "Buy milk, eggs, and bread": {
+                "value": "Buy milk, eggs, and bread"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success Add Todos",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 1,
+                  "title": "Buy groceries",
+                  "description": "Buy milk, eggs, and bread"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed Token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "UnAuthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/{id}": {
+      "put": {
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "nullable": false
+            },
+            "examples": {
+              "1": {
+                "value": 1
+              }
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "Buy groceries": {
+                "value": "Buy groceries"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": false
+            },
+            "examples": {
+              "Buy milk, eggs, bread, and cheese": {
+                "value": "Buy milk, eggs, bread, and cheese"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success Add Todos",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 1,
+                  "title": "Buy groceries",
+                  "description": "Buy milk, eggs, bread, and cheese"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Failed Token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Forbidden"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "nullable": false
+            },
+            "examples": {
+              "1": {
+                "value": 1
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success Delete",
+            "content": {
+              "application/json": {
+                "example": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

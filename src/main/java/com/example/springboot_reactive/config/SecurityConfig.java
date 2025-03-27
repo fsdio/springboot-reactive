@@ -11,6 +11,9 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.logout.DelegatingServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.SecurityContextServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.WebSessionServerLogoutHandler;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 import com.example.springboot_reactive.security.jwt.JwtTokenAuthenticationFilter;
@@ -20,12 +23,14 @@ import com.example.springboot_reactive.service.CustomUserDetailsService;
 import reactor.core.publisher.Mono;
 
 @Configuration
-@Deprecated
 public class SecurityConfig {
   @Bean
   SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http,
       JwtTokenProvider tokenProvider,
       ReactiveAuthenticationManager reactiveAuthenticationManager) {
+
+    DelegatingServerLogoutHandler logoutHandler = new DelegatingServerLogoutHandler(
+        new SecurityContextServerLogoutHandler(), new WebSessionServerLogoutHandler());
 
     http
         .csrf(csrf -> csrf.disable())
@@ -45,11 +50,15 @@ public class SecurityConfig {
         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .authorizeExchange(
             authorizeExchange -> authorizeExchange
-                .pathMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                .pathMatchers(HttpMethod.POST,
+                    "/api/v1/auth/**",
+                    "/actuator/**")
+                .permitAll()
                 .pathMatchers(HttpMethod.GET, "/admin").hasRole("ADMIN")
                 .pathMatchers(HttpMethod.GET, "/user").hasRole("USER")
                 .anyExchange().permitAll())
-        .addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider), SecurityWebFiltersOrder.HTTP_BASIC);
+        .addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider), SecurityWebFiltersOrder.HTTP_BASIC)
+        .logout(logout -> logout.logoutHandler(logoutHandler));
 
     return http.build();
   }

@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
-@Deprecated
 public class JwtTokenAuthenticationFilter implements WebFilter {
 
   public static final String HEADER_PREFIX = "Bearer ";

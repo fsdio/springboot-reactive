@@ -1,5 +1,6 @@
 package com.example.springboot_reactive.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthRequest {
+
+  @NotEmpty
   private String username;
+
+  @NotEmpty
   private String password;
 }

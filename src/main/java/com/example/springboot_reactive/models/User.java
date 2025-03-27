@@ -3,6 +3,7 @@ package com.example.springboot_reactive.models;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,11 +20,13 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
 
   @NotEmpty
+  @Column("id_user")
   private String id;
   @NotEmpty
   private String username;
   @NotEmpty
   private String password;
+  @NotEmpty
   private String roles;
 
   @Override

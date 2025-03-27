@@ -36,19 +36,33 @@ Develop a RESTful API with the following endpoints:
 10. **Refresh Token Mechanism**: Implement for authentication
 
 ### User Registration
+Endpoint: **POST** /api/v1/auth/register
 ```json
-Endpoint: POST /api/v1/auth/register
-
 Request Body:
 {
-  "name": "John Doe",
-  "email": "john@doe.com",
-  "password": "password"
+  "username": "my-username",
+  "password": "my-password",
+  "roles": "ROLE_ADMIN"
 }
 
-Responses (200 - Success):
+Responses (201 Created):
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+  "message": "New user created",
+  "user": {
+    "id": "(UUIDv7)",
+    "username": "cihuy5",
+    "password": "(BCrypt)",
+    "roles": "ROLE_USER",
+    "enabled": true,
+    "authorities": [
+      {
+        "authority": "ROLE_USER"
+      }
+    ],
+    "accountNonLocked": true,
+    "accountNonExpired": true,
+    "credentialsNonExpired": true
+  }
 }
 ```
 

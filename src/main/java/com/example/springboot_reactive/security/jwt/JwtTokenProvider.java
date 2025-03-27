@@ -17,12 +17,13 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
 import static java.util.stream.Collectors.joining;
 
 @Component
-@Deprecated
 public class JwtTokenProvider {
 
   private static final String AUTHORITIES_KEY = "roles";
@@ -52,17 +53,20 @@ public class JwtTokenProvider {
     Date now = new Date();
     Date validity = new Date(now.getTime() + this.jwtProperties.getValidityInMs());
 
+    byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
     return Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
         .setExpiration(validity)
-        .signWith(SignatureAlgorithm.HS256, this.secretKey)
+        .signWith(Keys.hmacShaKeyFor(keyBytes), SignatureAlgorithm.HS256)
         .compact();
 
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody();
+    byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+    Claims claims = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(keyBytes)).build().parseClaimsJws(token)
+        .getBody();
 
     Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
 
@@ -76,7 +80,9 @@ public class JwtTokenProvider {
 
   public boolean validateToken(String token) {
     try {
-      Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+      byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+      Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(keyBytes)).build()
+          .parseClaimsJws(token);
 
       if (claims.getBody().getExpiration().before(new Date())) {
         return false;
